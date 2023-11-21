@@ -10,6 +10,7 @@ on:
 env:
   user: ${{ secrets.DOCKER_USER }}
   passwd: ${{ secrets.DOCKER_PW }}
+  anaconda_tag: $(curl -sL https://repo.anaconda.com/archive |grep '.*Anaconda3-.*-Linux' |head -1 |cut -d"-" -f 2,3)
 
 jobs:
   build_push:
@@ -37,5 +38,5 @@ jobs:
           docker push ${{ env.user }}/samtools:latest
           
           docker build -t anaconda3tmux:latest anaconda3tmux/
-          docker tag anaconda3tmux:latest ${{env.user}}/anaconda3tmux:latest
+          docker tag anaconda3tmux:latest ${{env.user}}/anaconda3tmux:${{env.anaconda_tag}}
           docker push ${{ env.user }}/anaconda3tmux:latest
