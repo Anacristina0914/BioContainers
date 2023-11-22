@@ -26,25 +26,17 @@ RUN set -x && \
         procps \
         subversion \
         wget \
-	tmux \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* && \
+        curl \
+	    tmux && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     UNAME_M="$(uname -m)" && \
-    if [ "${UNAME_M}" = "x86_64" ]; then \
-        ANACONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh"; \
-        SHA256SUM="a7c0afe862f6ea19a596801fc138bde0463abcbce1b753e8d5c474b506a2db2d"; \
-    elif [ "${UNAME_M}" = "s390x" ]; then \
-        ANACONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-s390x.sh"; \
-        SHA256SUM="c14415df69e439acd7458737a84a45c6067376cbec2fccf5e2393f9837760ea7"; \
-    elif [ "${UNAME_M}" = "aarch64" ]; then \
-        ANACONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-aarch64.sh"; \
-        SHA256SUM="dc6bb4eab3996e0658f8bc4bbd229c18f55269badd74acc36d9e23143268b795"; \
-    elif [ "${UNAME_M}" = "ppc64le" ]; then \
-        ANACONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-ppc64le.sh"; \
-        SHA256SUM="a50bf5bd26b5c5a2c24028c1aff6da2fa4d4586ca43ae3acdf7ffb9b50d7f282"; \
-    fi && \
+    ANACONDA_BASE="https://repo.anaconda.com/archive" && \
+    ANACONDA_VERSION="$(curl -sL https://repo.anaconda.com/archive |grep ".*Anaconda3-.*-Linux" | head -1 | cut -d"-" -f 2,3)" && \
+    ANACONDA_URL=${ANACONDA_BASE}/Anaconda3-${ANACONDA_VERSION}-Linux-${UNAME_M}.sh && \
+    SHA256SUM=$(curl -sL ${ANACONDA_BASE} | grep -A 3 Anaconda3-${ANACONDA_VERSION}-Linux-${UNAME_M}.sh |cut -d">" -f 2 |cut -d"<" -f 1 | tail -1) && \
     wget "${ANACONDA_URL}" -O anaconda.sh -q && \
-    echo "${SHA256SUM} anaconda.sh" > shasum && \
+    echo "${SHA256SUM}  anaconda.sh" > shasum && \
     sha256sum --check --status shasum && \
     /bin/bash anaconda.sh -b -p /opt/conda && \
     rm anaconda.sh shasum && \
@@ -54,7 +46,17 @@ RUN set -x && \
     find /opt/conda/ -follow -type f -name '*.a' -delete && \
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
     /opt/conda/bin/conda clean -afy && \
-    conda install -c bioconda fastq-tools && \
-    conda install -c bioconda/label/cf201901 fastq-tools
+    conda install -c bioconda fastq-tools
+
+ENV FASTQ_FILES="$(curl -sSL https://anaconda.org/bioconda/fastq-tools/files | grep fastq-tools)"
+ENV FASTQ_VERSION="$(echo ${FASTQ_FILES} |sed 's/?version=/\n/g' |sed 's/</\n/g'|grep ^[012]|sed 's/\">//'|head -1)"
+
+
+LABEL software="fastqtools" \ 
+	base_image="debian:bullseye-slim" \ 
+	container="fastqtools" \
+	about.summary="Docker container with latest anaconda distribution and fastq-tools command line application" \ 
+	software.version="0.8.3" \
+	version="1.0"
     
 CMD [ "/bin/bash" ]
