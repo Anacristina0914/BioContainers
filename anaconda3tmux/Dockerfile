@@ -52,7 +52,6 @@ LABEL software="Anaconda TMUX" \
 	base_image="debian:bullseye-slim" \ 
 	container="anacondatmux" \
 	about.summary="Docker container with latest anaconda distribution and tmux terminal multiplexer" \ 
-	software.version="2023.09-0" \
 	version="1.0"
 
 CMD [ "/bin/bash" ]
