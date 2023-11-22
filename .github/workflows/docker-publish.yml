@@ -11,8 +11,7 @@ env:
   user: ${{ secrets.DOCKER_USER }}
   passwd: ${{ secrets.DOCKER_PW }}
   anaconda_tag: $(curl -sL https://repo.anaconda.com/archive |grep '.*Anaconda3-.*-Linux' |head -1 |cut -d"-" -f 2,3)
-  fastqfiles: $(curl -sSL https://anaconda.org/bioconda/fastq-tools/files | grep fastq-tools)
-  fastq_tag: $(echo ${fastqfiles} |sed 's/?version=/\n/g' |sed 's/</\n/g'|grep ^[012]|sed 's/\">//'|head -1)
+  fastq_tag: $(curl -sSL https://anaconda.org/bioconda/fastq-tools/files | grep fastq-tools |sed 's/?version=/\n/g' |sed 's/</\n/g'|grep ^[012]|sed 's/\">//'|head -1)
 
 
 jobs:
