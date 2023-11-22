@@ -41,4 +41,4 @@ jobs:
           
           docker build -t anaconda3tmux:${{env.anaconda_tag}} anaconda3tmux/
           docker tag anaconda3tmux:${{env.anaconda_tag}} ${{env.user}}/anaconda3tmux:${{env.anaconda_tag}}
-          docker push ${{ env.user }}/anaconda3tmux:latest
+          docker push ${{ env.user }}/anaconda3tmux:${{env.anaconda_tag}}
