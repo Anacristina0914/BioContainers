@@ -11,6 +11,9 @@ env:
   user: ${{ secrets.DOCKER_USER }}
   passwd: ${{ secrets.DOCKER_PW }}
   anaconda_tag: $(curl -sL https://repo.anaconda.com/archive |grep '.*Anaconda3-.*-Linux' |head -1 |cut -d"-" -f 2,3)
+  fastqfiles: $(curl -sSL https://anaconda.org/bioconda/fastq-tools/files | grep fastq-tools)
+  fastq_tag: $(echo ${fastqfiles} |sed 's/?version=/\n/g' |sed 's/</\n/g'|grep ^[012]|sed 's/\">//'|head -1)
+
 
 jobs:
   build_push:
@@ -29,9 +32,9 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          docker build -t fastq-tools:latest fastq-tools/
-          docker tag fastq-tools:latest ${{env.user}}/fastq-tools:latest
-          docker push ${{ env.user }}/fastq-tools:latest
+          docker build -t fastq-tools:${{env.fastq_tag}} fastq-tools/
+          docker tag fastq-tools:${{env.fastq_tag}} ${{env.user}}/fastq-tools:${{env.fastq_tag}}
+          docker push ${{ env.user }}/fastq-tools:${{env.fastq_tag}}
 
           docker build -t samtools:latest samtools/
           docker tag samtools:latest ${{env.user}}/samtools:latest
