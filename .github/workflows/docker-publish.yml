@@ -39,6 +39,6 @@ jobs:
           docker tag samtools:latest ${{env.user}}/samtools:latest
           docker push ${{ env.user }}/samtools:latest
           
-          docker build -t anaconda3tmux:latest anaconda3tmux/
-          docker tag anaconda3tmux:latest ${{env.user}}/anaconda3tmux:${{env.anaconda_tag}}
+          docker build -t anaconda3tmux:${{env.anaconda_tag}} anaconda3tmux/
+          docker tag anaconda3tmux:${{env.anaconda_tag}} ${{env.user}}/anaconda3tmux:${{env.anaconda_tag}}
           docker push ${{ env.user }}/anaconda3tmux:latest
