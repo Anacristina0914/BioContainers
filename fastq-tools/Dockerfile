@@ -48,15 +48,10 @@ RUN set -x && \
     /opt/conda/bin/conda clean -afy && \
     conda install -c bioconda fastq-tools
 
-ENV FASTQ_FILES="$(curl -sSL https://anaconda.org/bioconda/fastq-tools/files | grep fastq-tools)"
-ENV FASTQ_VERSION="$(echo ${FASTQ_FILES} |sed 's/?version=/\n/g' |sed 's/</\n/g'|grep ^[012]|sed 's/\">//'|head -1)"
-
-
 LABEL software="fastqtools" \ 
 	base_image="debian:bullseye-slim" \ 
 	container="fastqtools" \
-	about.summary="Docker container with latest anaconda distribution and fastq-tools command line application" \ 
-	software.version="0.8.3" \
+	about.summary="Docker container with latest anaconda distribution and fastq-tools command line application" \
 	version="1.0"
     
 CMD [ "/bin/bash" ]
